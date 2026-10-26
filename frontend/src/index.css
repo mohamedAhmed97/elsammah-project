@@ -1,0 +1,89 @@
+@import "tailwindcss";
+
+@theme {
+    --color-primary: #f2fa00;
+    --color-background-light: #f0f4ff;
+    --color-background-dark: #0f172a;
+    --color-text-dark: #02194D;
+    --color-text-light: #e2e8f0;
+    --color-accent-blue: #2900C8;
+    --color-brand-dark: #02194D;
+    --color-brand-blue: #0A2472;
+    --color-brand-light-blue: #3B82F6;
+
+    --color-konecta-accent: #A6B7FF;
+    --color-konecta-highlight: #F0FA00;
+    --color-konecta-white: #FFFFFF;
+    --color-konecta-offwhite: #F2F0EB;
+    --color-konecta-black: #111111;
+
+    --shadow-glass: 0 8px 32px 0 rgba(31, 38, 135, 0.07);
+    --font-display: "Inter", "sans-serif";
+    --font-sans: "Inter", "sans-serif";
+}
+
+@layer base {
+    body {
+        @apply font-display tracking-normal bg-background-light dark:bg-background-dark text-text-dark dark:text-text-light antialiased;
+    }
+}
+
+/* Glass panel effect */
+.glass-panel {
+    background: rgba(255, 255, 255, 0.65);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border: 1px solid rgba(255, 255, 255, 0.5);
+}
+
+.dark .glass-panel {
+    background: rgba(15, 23, 42, 0.6);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+/* Custom scrollbars */
+.scrollbar-hide::-webkit-scrollbar {
+    display: none;
+}
+
+.scrollbar-hide {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+}
+
+::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+}
+
+::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+    background: #cbd5e1;
+    border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: #94a3b8;
+}
+
+.dark ::-webkit-scrollbar-thumb {
+    background: #1E293B;
+}
+
+.redaction-block {
+    display: inline-block;
+    background-color: var(--color-brand-dark, #02194D);
+    height: 1.1em;
+    width: auto;
+    min-width: 60px;
+    vertical-align: middle;
+    border-radius: 2px;
+    margin: 0 2px;
+}
+
+.dark .redaction-block {
+    background-color: var(--color-konecta-accent, #A6B7FF);
+}

@@ -1,0 +1,6 @@
+agent_id,agent_name,avg_handle_time_seconds,csat_score,fcr_rate,escalation_rate,schedule_adherence,strengths,gaps
+AGT-201,Sofia Martinez,245.5,4.8,0.88,0.02,0.95,"Empathy, Product Knowledge",Upselling
+AGT-202,Diego Ramirez,310.2,4.2,0.75,0.08,0.90,Efficiency,De-escalation
+AGT-203,Isabella Torres,198.0,4.9,0.92,0.01,0.98,"Active Listening, Patience",Technical Troubleshooting
+AGT-204,Miguel Santos,420.1,3.5,0.60,0.15,0.85,Persistence,"Time Management, Product Knowledge"
+AGT-205,Valentina Cruz,275.0,4.5,0.82,0.05,0.93,"Multilingual, Empathy",Billing Processes

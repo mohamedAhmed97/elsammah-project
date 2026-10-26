@@ -1,0 +1,10 @@
+crewai[tools,google-genai]>=0.100.0
+pydantic>=2.0,<2.10
+python-dotenv
+litellm
+fastapi
+uvicorn[standard]
+sse-starlette
+sqlalchemy
+psycopg2-binary
+fastmcp>=2.0.0

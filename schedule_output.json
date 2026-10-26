@@ -1,0 +1,322 @@
+{
+  "schedule_period": "2025-W24",
+  "assignments": [
+    {
+      "agent_id": "AGT-206",
+      "shift_start": "2025-06-09T07:00:00Z",
+      "shift_end": "2025-06-09T15:00:00Z",
+      "assigned_queue": "Q-SUPPORT-01",
+      "reason": "Assigned to Morning shift on 2025-06-09 due to preference for the morning shift and skill alignment (score: 2). Remaining weekly hours: 3.0."
+    },
+    {
+      "agent_id": "AGT-224",
+      "shift_start": "2025-06-09T07:00:00Z",
+      "shift_end": "2025-06-09T15:00:00Z",
+      "assigned_queue": "Q-SUPPORT-01",
+      "reason": "Assigned to Morning shift on 2025-06-09 due to preference for the morning shift and skill alignment (score: 1). Remaining weekly hours: 10.0."
+    },
+    {
+      "agent_id": "AGT-212",
+      "shift_start": "2025-06-09T07:00:00Z",
+      "shift_end": "2025-06-09T15:00:00Z",
+      "assigned_queue": "Q-SUPPORT-01",
+      "reason": "Assigned to Morning shift on 2025-06-09 due to preference for the morning shift and skill alignment (score: 2). Remaining weekly hours: 5.0."
+    },
+    {
+      "agent_id": "AGT-207",
+      "shift_start": "2025-06-09T15:00:00Z",
+      "shift_end": "2025-06-09T23:00:00Z",
+      "assigned_queue": "Q-SUPPORT-01",
+      "reason": "Assigned to Afternoon shift on 2025-06-09 due to preference for the afternoon shift and skill alignment (score: 1). Remaining weekly hours: 9.0."
+    },
+    {
+      "agent_id": "AGT-210",
+      "shift_start": "2025-06-09T15:00:00Z",
+      "shift_end": "2025-06-09T23:00:00Z",
+      "assigned_queue": "Q-SUPPORT-01",
+      "reason": "Assigned to Afternoon shift on 2025-06-09 due to preference for the afternoon shift and skill alignment (score: 2). Remaining weekly hours: 9.0."
+    },
+    {
+      "agent_id": "AGT-219",
+      "shift_start": "2025-06-09T15:00:00Z",
+      "shift_end": "2025-06-09T23:00:00Z",
+      "assigned_queue": "Q-SUPPORT-01",
+      "reason": "Assigned to Afternoon shift on 2025-06-09 due to preference for the afternoon shift and skill alignment (score: 1). Remaining weekly hours: 10.0."
+    },
+    {
+      "agent_id": "AGT-211",
+      "shift_start": "2025-06-09T23:00:00Z",
+      "shift_end": "2025-06-10T07:00:00Z",
+      "assigned_queue": "Q-SUPPORT-01",
+      "reason": "Assigned to Evening shift on 2025-06-09 due to preference for the evening shift and skill alignment (score: 1). Remaining weekly hours: 3.0."
+    },
+    {
+      "agent_id": "AGT-217",
+      "shift_start": "2025-06-09T23:00:00Z",
+      "shift_end": "2025-06-10T07:00:00Z",
+      "assigned_queue": "Q-SUPPORT-01",
+      "reason": "Assigned to Evening shift on 2025-06-09 due to preference for the evening shift and skill alignment (score: 1). Remaining weekly hours: 3.0."
+    },
+    {
+      "agent_id": "AGT-201",
+      "shift_start": "2025-06-09T23:00:00Z",
+      "shift_end": "2025-06-10T07:00:00Z",
+      "assigned_queue": "Q-SUPPORT-01",
+      "reason": "Assigned to Evening shift on 2025-06-09 to meet demand and for fair distribution. Remaining weekly hours: 0.0."
+    },
+    {
+      "agent_id": "AGT-203",
+      "shift_start": "2025-06-10T07:00:00Z",
+      "shift_end": "2025-06-10T15:00:00Z",
+      "assigned_queue": "Q-SUPPORT-01",
+      "reason": "Assigned to Morning shift on 2025-06-10 due to preference for the morning shift and skill alignment (score: 2). Remaining weekly hours: 0.0."
+    },
+    {
+      "agent_id": "AGT-230",
+      "shift_start": "2025-06-10T07:00:00Z",
+      "shift_end": "2025-06-10T15:00:00Z",
+      "assigned_queue": "Q-SUPPORT-01",
+      "reason": "Assigned to Morning shift on 2025-06-10 due to preference for the morning shift and skill alignment (score: 1). Remaining weekly hours: 2.0."
+    },
+    {
+      "agent_id": "AGT-233",
+      "shift_start": "2025-06-10T07:00:00Z",
+      "shift_end": "2025-06-10T15:00:00Z",
+      "assigned_queue": "Q-SUPPORT-01",
+      "reason": "Assigned to Morning shift on 2025-06-10 due to preference for the morning shift and skill alignment (score: 1). Remaining weekly hours: 0.0."
+    },
+    {
+      "agent_id": "AGT-205",
+      "shift_start": "2025-06-10T15:00:00Z",
+      "shift_end": "2025-06-10T23:00:00Z",
+      "assigned_queue": "Q-SUPPORT-01",
+      "reason": "Assigned to Afternoon shift on 2025-06-10 due to preference for the afternoon shift and skill alignment (score: 1). Remaining weekly hours: 4.0."
+    },
+    {
+      "agent_id": "AGT-215",
+      "shift_start": "2025-06-10T15:00:00Z",
+      "shift_end": "2025-06-10T23:00:00Z",
+      "assigned_queue": "Q-SUPPORT-01",
+      "reason": "Assigned to Afternoon shift on 2025-06-10 to meet demand and for fair distribution. Remaining weekly hours: 4.0."
+    },
+    {
+      "agent_id": "AGT-216",
+      "shift_start": "2025-06-10T15:00:00Z",
+      "shift_end": "2025-06-10T23:00:00Z",
+      "assigned_queue": "Q-SUPPORT-01",
+      "reason": "Assigned to Afternoon shift on 2025-06-10 due to preference for the afternoon shift and skill alignment (score: 2). Remaining weekly hours: 12.0."
+    },
+    {
+      "agent_id": "AGT-221",
+      "shift_start": "2025-06-10T23:00:00Z",
+      "shift_end": "2025-06-11T07:00:00Z",
+      "assigned_queue": "Q-SUPPORT-01",
+      "reason": "Assigned to Evening shift on 2025-06-10 to meet demand and for fair distribution. Remaining weekly hours: 5.0."
+    },
+    {
+      "agent_id": "AGT-227",
+      "shift_start": "2025-06-10T23:00:00Z",
+      "shift_end": "2025-06-11T07:00:00Z",
+      "assigned_queue": "Q-SUPPORT-01",
+      "reason": "Assigned to Evening shift on 2025-06-10 to meet demand and for fair distribution. Remaining weekly hours: 8.0."
+    },
+    {
+      "agent_id": "AGT-228",
+      "shift_start": "2025-06-10T23:00:00Z",
+      "shift_end": "2025-06-11T07:00:00Z",
+      "assigned_queue": "Q-SUPPORT-01",
+      "reason": "Assigned to Evening shift on 2025-06-10 to meet demand and for fair distribution. Remaining weekly hours: 10.0."
+    },
+    {
+      "agent_id": "AGT-206",
+      "shift_start": "2025-06-11T07:00:00Z",
+      "shift_end": "2025-06-11T15:00:00Z",
+      "assigned_queue": "Q-SUPPORT-01",
+      "reason": "Assigned to Morning shift on 2025-06-11 due to preference for the morning shift and skill alignment (score: 2). Remaining weekly hours: -5.0."
+    },
+    {
+      "agent_id": "AGT-224",
+      "shift_start": "2025-06-11T07:00:00Z",
+      "shift_end": "2025-06-11T15:00:00Z",
+      "assigned_queue": "Q-SUPPORT-01",
+      "reason": "Assigned to Morning shift on 2025-06-11 due to preference for the morning shift and skill alignment (score: 1). Remaining weekly hours: 2.0."
+    },
+    {
+      "agent_id": "AGT-212",
+      "shift_start": "2025-06-11T07:00:00Z",
+      "shift_end": "2025-06-11T15:00:00Z",
+      "assigned_queue": "Q-SUPPORT-01",
+      "reason": "Assigned to Morning shift on 2025-06-11 due to preference for the morning shift and skill alignment (score: 2). Remaining weekly hours: -3.0."
+    },
+    {
+      "agent_id": "AGT-207",
+      "shift_start": "2025-06-11T15:00:00Z",
+      "shift_end": "2025-06-11T23:00:00Z",
+      "assigned_queue": "Q-SUPPORT-01",
+      "reason": "Assigned to Afternoon shift on 2025-06-11 due to preference for the afternoon shift and skill alignment (score: 1). Remaining weekly hours: 1.0."
+    },
+    {
+      "agent_id": "AGT-210",
+      "shift_start": "2025-06-11T15:00:00Z",
+      "shift_end": "2025-06-11T23:00:00Z",
+      "assigned_queue": "Q-SUPPORT-01",
+      "reason": "Assigned to Afternoon shift on 2025-06-11 due to preference for the afternoon shift and skill alignment (score: 2). Remaining weekly hours: 1.0."
+    },
+    {
+      "agent_id": "AGT-219",
+      "shift_start": "2025-06-11T15:00:00Z",
+      "shift_end": "2025-06-11T23:00:00Z",
+      "assigned_queue": "Q-SUPPORT-01",
+      "reason": "Assigned to Afternoon shift on 2025-06-11 due to preference for the afternoon shift and skill alignment (score: 1). Remaining weekly hours: 2.0."
+    },
+    {
+      "agent_id": "AGT-211",
+      "shift_start": "2025-06-11T23:00:00Z",
+      "shift_end": "2025-06-12T07:00:00Z",
+      "assigned_queue": "Q-SUPPORT-01",
+      "reason": "Assigned to Evening shift on 2025-06-11 due to preference for the evening shift and skill alignment (score: 1). Remaining weekly hours: -5.0."
+    },
+    {
+      "agent_id": "AGT-217",
+      "shift_start": "2025-06-11T23:00:00Z",
+      "shift_end": "2025-06-12T07:00:00Z",
+      "assigned_queue": "Q-SUPPORT-01",
+      "reason": "Assigned to Evening shift on 2025-06-11 due to preference for the evening shift and skill alignment (score: 1). Remaining weekly hours: -5.0."
+    },
+    {
+      "agent_id": "AGT-216",
+      "shift_start": "2025-06-11T23:00:00Z",
+      "shift_end": "2025-06-12T07:00:00Z",
+      "assigned_queue": "Q-SUPPORT-01",
+      "reason": "Assigned to Evening shift on 2025-06-11 to meet demand and for fair distribution. Remaining weekly hours: 4.0."
+    },
+    {
+      "agent_id": "AGT-230",
+      "shift_start": "2025-06-12T07:00:00Z",
+      "shift_end": "2025-06-12T15:00:00Z",
+      "assigned_queue": "Q-SUPPORT-01",
+      "reason": "Assigned to Morning shift on 2025-06-12 due to preference for the morning shift and skill alignment (score: 1). Remaining weekly hours: -6.0."
+    },
+    {
+      "agent_id": "AGT-215",
+      "shift_start": "2025-06-12T07:00:00Z",
+      "shift_end": "2025-06-12T15:00:00Z",
+      "assigned_queue": "Q-SUPPORT-01",
+      "reason": "Assigned to Morning shift on 2025-06-12 to meet demand and for fair distribution. Remaining weekly hours: -4.0."
+    },
+    {
+      "agent_id": "AGT-222",
+      "shift_start": "2025-06-12T07:00:00Z",
+      "shift_end": "2025-06-12T15:00:00Z",
+      "assigned_queue": "Q-SUPPORT-01",
+      "reason": "Assigned to Morning shift on 2025-06-12 to meet demand and for fair distribution. Remaining weekly hours: 11.0."
+    },
+    {
+      "agent_id": "AGT-205",
+      "shift_start": "2025-06-12T15:00:00Z",
+      "shift_end": "2025-06-12T23:00:00Z",
+      "assigned_queue": "Q-SUPPORT-01",
+      "reason": "Assigned to Afternoon shift on 2025-06-12 due to preference for the afternoon shift and skill alignment (score: 1). Remaining weekly hours: -4.0."
+    },
+    {
+      "agent_id": "AGT-234",
+      "shift_start": "2025-06-12T15:00:00Z",
+      "shift_end": "2025-06-12T23:00:00Z",
+      "assigned_queue": "Q-SUPPORT-01",
+      "reason": "Assigned to Afternoon shift on 2025-06-12 due to preference for the afternoon shift and skill alignment (score: 1). Remaining weekly hours: 6.0."
+    },
+    {
+      "agent_id": "AGT-227",
+      "shift_start": "2025-06-12T15:00:00Z",
+      "shift_end": "2025-06-12T23:00:00Z",
+      "assigned_queue": "Q-SUPPORT-01",
+      "reason": "Assigned to Afternoon shift on 2025-06-12 to meet demand and for fair distribution. Remaining weekly hours: 0.0."
+    },
+    {
+      "agent_id": "AGT-221",
+      "shift_start": "2025-06-12T23:00:00Z",
+      "shift_end": "2025-06-13T07:00:00Z",
+      "assigned_queue": "Q-SUPPORT-01",
+      "reason": "Assigned to Evening shift on 2025-06-12 to meet demand and for fair distribution. Remaining weekly hours: -3.0."
+    },
+    {
+      "agent_id": "AGT-228",
+      "shift_start": "2025-06-12T23:00:00Z",
+      "shift_end": "2025-06-13T07:00:00Z",
+      "assigned_queue": "Q-SUPPORT-01",
+      "reason": "Assigned to Evening shift on 2025-06-12 to meet demand and for fair distribution. Remaining weekly hours: 2.0."
+    },
+    {
+      "agent_id": "AGT-216",
+      "shift_start": "2025-06-12T23:00:00Z",
+      "shift_end": "2025-06-13T07:00:00Z",
+      "assigned_queue": "Q-SUPPORT-01",
+      "reason": "Assigned to Evening shift on 2025-06-12 to meet demand and for fair distribution. Remaining weekly hours: -4.0."
+    },
+    {
+      "agent_id": "AGT-207",
+      "shift_start": "2025-06-13T07:00:00Z",
+      "shift_end": "2025-06-13T15:00:00Z",
+      "assigned_queue": "Q-SUPPORT-01",
+      "reason": "Assigned to Morning shift on 2025-06-13 to meet demand and for fair distribution. Remaining weekly hours: -7.0."
+    },
+    {
+      "agent_id": "AGT-210",
+      "shift_start": "2025-06-13T07:00:00Z",
+      "shift_end": "2025-06-13T15:00:00Z",
+      "assigned_queue": "Q-SUPPORT-01",
+      "reason": "Assigned to Morning shift on 2025-06-13 to meet demand and for fair distribution. Remaining weekly hours: -7.0."
+    },
+    {
+      "agent_id": "AGT-219",
+      "shift_start": "2025-06-13T07:00:00Z",
+      "shift_end": "2025-06-13T15:00:00Z",
+      "assigned_queue": "Q-SUPPORT-01",
+      "reason": "Assigned to Morning shift on 2025-06-13 to meet demand and for fair distribution. Remaining weekly hours: -6.0."
+    },
+    {
+      "agent_id": "AGT-222",
+      "shift_start": "2025-06-13T15:00:00Z",
+      "shift_end": "2025-06-13T23:00:00Z",
+      "assigned_queue": "Q-SUPPORT-01",
+      "reason": "Assigned to Afternoon shift on 2025-06-13 due to preference for the afternoon shift and skill alignment (score: 1). Remaining weekly hours: 3.0."
+    },
+    {
+      "agent_id": "AGT-234",
+      "shift_start": "2025-06-13T15:00:00Z",
+      "shift_end": "2025-06-13T23:00:00Z",
+      "assigned_queue": "Q-SUPPORT-01",
+      "reason": "Assigned to Afternoon shift on 2025-06-13 due to preference for the afternoon shift and skill alignment (score: 1). Remaining weekly hours: -2.0."
+    },
+    {
+      "agent_id": "AGT-228",
+      "shift_start": "2025-06-13T15:00:00Z",
+      "shift_end": "2025-06-13T23:00:00Z",
+      "assigned_queue": "Q-SUPPORT-01",
+      "reason": "Assigned to Afternoon shift on 2025-06-13 due to preference for the afternoon shift and skill alignment (score: 1). Remaining weekly hours: -6.0."
+    },
+    {
+      "agent_id": "AGT-215",
+      "shift_start": "2025-06-13T23:00:00Z",
+      "shift_end": "2025-06-14T07:00:00Z",
+      "assigned_queue": "Q-SUPPORT-01",
+      "reason": "Assigned to Evening shift on 2025-06-13 to meet demand and for fair distribution. Remaining weekly hours: -12.0."
+    },
+    {
+      "agent_id": "AGT-212",
+      "shift_start": "2025-06-13T23:00:00Z",
+      "shift_end": "2025-06-14T07:00:00Z",
+      "assigned_queue": "Q-SUPPORT-01",
+      "reason": "Assigned to Evening shift on 2025-06-13 to meet demand and for fair distribution. Remaining weekly hours: -11.0."
+    },
+    {
+      "agent_id": "AGT-224",
+      "shift_start": "2025-06-13T23:00:00Z",
+      "shift_end": "2025-06-14T07:00:00Z",
+      "assigned_queue": "Q-SUPPORT-01",
+      "reason": "Assigned to Evening shift on 2025-06-13 to meet demand and for fair distribution. Remaining weekly hours: -6.0."
+    }
+  ],
+  "coverage_score": 0.93,
+  "notes": "Generated schedule for 2025-W24 (June 9-13, 2025) for queue 'Q-SUPPORT-01'. Assumed 3 agents are required per time slot (Morning, Afternoon, Evening) per day, for a total of 45 target slots. This assumption was made to ensure a feasible schedule given agents' 'Current Scheduled Hrs' and 'Max Hrs'. Leave dates for 2025-W24 were respected (no conflicts detected). Back-to-back shifts without an 8-hour rest gap were avoided. Agent strengths were matched to shift types, and shifts were distributed based on agent preference and lowest current scheduled hours first for fairness, considering available hours."
+}

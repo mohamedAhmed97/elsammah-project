@@ -1,0 +1,428 @@
+<!DOCTYPE html>
+
+<html lang="en">
+
+<head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>Elsam3a Ops Cockpit Dashboard</title>
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;900&amp;display=swap"
+        rel="stylesheet" />
+    <link
+        href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap"
+        rel="stylesheet" />
+    <link
+        href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap"
+        rel="stylesheet" />
+    <script>
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        primary: "#f2fa00", // Neon Yellow
+                        "background-light": "#f0f4ff", // Light Blueish White
+                        "background-dark": "#0f172a", // Dark Blue Slate
+                        "text-dark": "#02194D", // Very Dark Blue
+                        "text-light": "#e2e8f0",
+                        "accent-blue": "#2900C8", // Deep Royal Blue
+                        "glass-border": "rgba(255, 255, 255, 0.5)",
+                    },
+                    fontFamily: {
+                        display: ["Inter", "sans-serif"]
+                    },
+                    borderRadius: { "DEFAULT": "0.5rem", "lg": "0.75rem", "xl": "1rem", "2xl": "1.5rem" },
+                    boxShadow: {
+                        'glass': '0 8px 32px 0 rgba(31, 38, 135, 0.07)',
+                    }
+                },
+            },
+        }
+    </script>
+    <style>
+        .glass-panel {
+            background: rgba(255, 255, 255, 0.65);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.5);
+        }
+
+        .dark .glass-panel {
+            background: rgba(15, 23, 42, 0.6);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        /* Custom scrollbar for the audit log */
+        .scrollbar-hide::-webkit-scrollbar {
+            display: none;
+        }
+
+        .scrollbar-hide {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+    </style>
+</head>
+
+<body
+    class="bg-background-light dark:bg-background-dark font-display text-text-dark dark:text-text-light min-h-screen transition-colors duration-300">
+    <div class="flex h-screen w-full overflow-hidden">
+        <!-- Sidebar -->
+        <aside
+            class="w-64 flex-shrink-0 flex flex-col justify-between border-r border-slate-200 dark:border-slate-800 bg-white/80 dark:bg-slate-900/80 backdrop-blur-md h-full z-20 transition-colors duration-300">
+            <div class="flex flex-col gap-6 p-6 h-full overflow-y-auto">
+                <!-- Logo Area -->
+                <div class="flex items-center gap-3">
+                    <div class="bg-center bg-no-repeat bg-cover rounded-xl size-10 shadow-sm border border-slate-100 dark:border-slate-700"
+                        data-alt="Elsam3a Logo"
+                        style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuBKaOOdTOcK-hZ2XR57B6CDtPKCZrPYz2kUir4yAzZq5vEc4OFChMnPUzvGV-Z9ojI-FxfO4hTtXryC5yM7wJKG9dnkO4OoE5oleB3G4yM6WgSkKm4PBVjveQjxhCb1P0Jr0XbNW9JmfGz2Ze0alokI4C9u0sqZJVSXjCzrDvZMwqwOYFCmpjBcFIa8yGI_9Xr3Mx_o7AIOT34KUs5w8w_tywYeRzKvbhT3y2aOfUrrAiWSuHozb6c0-L5bIf1rl75n1db3cdLC7tVZ");'>
+                    </div>
+                    <div class="flex flex-col">
+                        <h1 class="text-text-dark dark:text-white text-lg font-bold leading-tight">Al-Samma'ah</h1>
+                        <p class="text-slate-500 dark:text-slate-400 text-xs font-medium">Ops Cockpit v1.0</p>
+                    </div>
+                </div>
+                <!-- Navigation -->
+                <nav class="flex flex-col gap-2">
+                    <a class="flex items-center gap-3 px-4 py-3 rounded-xl bg-accent-blue/10 text-accent-blue dark:text-blue-300 font-semibold transition-all"
+                        href="#">
+                        <span class="material-symbols-outlined text-[20px]">dashboard</span>
+                        <span class="text-sm">Dashboard</span>
+                    </a>
+                    <a class="flex items-center gap-3 px-4 py-3 rounded-xl text-slate-600 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800 hover:text-text-dark dark:hover:text-white transition-all font-medium"
+                        href="#">
+                        <span class="material-symbols-outlined text-[20px]">analytics</span>
+                        <span class="text-sm">Analytics</span>
+                    </a>
+                    <a class="flex items-center gap-3 px-4 py-3 rounded-xl text-slate-600 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800 hover:text-text-dark dark:hover:text-white transition-all font-medium"
+                        href="#">
+                        <span class="material-symbols-outlined text-[20px]">group</span>
+                        <span class="text-sm">Team</span>
+                    </a>
+                    <a class="flex items-center gap-3 px-4 py-3 rounded-xl text-slate-600 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800 hover:text-text-dark dark:hover:text-white transition-all font-medium"
+                        href="#">
+                        <span class="material-symbols-outlined text-[20px]">settings</span>
+                        <span class="text-sm">Settings</span>
+                    </a>
+                    <a class="flex items-center gap-3 px-4 py-3 rounded-xl text-slate-600 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800 hover:text-text-dark dark:hover:text-white transition-all font-medium"
+                        href="#">
+                        <span class="material-symbols-outlined text-[20px]">help</span>
+                        <span class="text-sm">Help</span>
+                    </a>
+                </nav>
+                <!-- CTA -->
+                <div class="mt-auto">
+                    <button
+                        class="w-full flex items-center justify-center gap-2 rounded-xl h-12 bg-primary text-text-dark text-sm font-bold shadow-lg shadow-primary/20 hover:shadow-primary/40 hover:-translate-y-0.5 transition-all">
+                        <span class="material-symbols-outlined text-[20px]">bolt</span>
+                        <span>Start Superflow</span>
+                    </button>
+                </div>
+            </div>
+        </aside>
+        <!-- Main Content -->
+        <main class="flex-1 flex flex-col h-full overflow-hidden relative">
+            <!-- Background Decorative Blobs -->
+            <div class="absolute top-0 left-0 w-full h-full overflow-hidden -z-10 pointer-events-none">
+                <div
+                    class="absolute top-[-10%] left-[20%] w-[500px] h-[500px] bg-blue-200/40 dark:bg-blue-900/20 rounded-full blur-3xl mix-blend-multiply dark:mix-blend-screen animate-blob">
+                </div>
+                <div
+                    class="absolute top-[20%] right-[10%] w-[400px] h-[400px] bg-purple-200/40 dark:bg-purple-900/20 rounded-full blur-3xl mix-blend-multiply dark:mix-blend-screen animate-blob animation-delay-2000">
+                </div>
+                <div
+                    class="absolute bottom-[-10%] left-[40%] w-[600px] h-[600px] bg-indigo-200/40 dark:bg-indigo-900/20 rounded-full blur-3xl mix-blend-multiply dark:mix-blend-screen animate-blob animation-delay-4000">
+                </div>
+            </div>
+            <!-- Top Header Area -->
+            <header class="flex-shrink-0 px-8 py-6 flex flex-wrap justify-between items-end gap-4 z-10">
+                <div class="flex flex-col gap-1">
+                    <h2 class="text-4xl font-black tracking-tight text-text-dark dark:text-white">The Ops Cockpit</h2>
+                    <p class="text-slate-500 dark:text-slate-400 text-base font-medium flex items-center gap-2">
+                        <span class="w-2 h-2 rounded-full bg-green-500 animate-pulse"></span>
+                        Real-time BPO Automation Pipeline Monitor
+                    </p>
+                </div>
+                <div class="flex gap-3">
+                    <div
+                        class="flex items-center gap-2 px-3 py-1.5 rounded-full glass-panel border border-slate-200 dark:border-slate-700 shadow-sm">
+                        <div class="w-2 h-2 bg-green-500 rounded-full"></div>
+                        <span class="text-xs font-semibold text-slate-600 dark:text-slate-300">System Healthy</span>
+                    </div>
+                    <button
+                        class="flex items-center gap-2 px-4 py-2 bg-white dark:bg-slate-800 text-text-dark dark:text-white text-sm font-bold rounded-xl shadow-sm hover:bg-slate-50 dark:hover:bg-slate-700 transition-colors border border-slate-200 dark:border-slate-700">
+                        <span class="material-symbols-outlined text-[18px]">download</span>
+                        <span>Export Report</span>
+                    </button>
+                </div>
+            </header>
+            <!-- Scrollable Content Area -->
+            <div class="flex-1 overflow-y-auto px-8 pb-8 scrollbar-hide">
+                <div class="flex flex-col lg:flex-row gap-6 h-full min-h-[600px]">
+                    <!-- Left Column: Metrics & Visualizer -->
+                    <div class="flex-1 flex flex-col gap-6">
+                        <!-- KPI Cards -->
+                        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+                            <!-- Card 1 -->
+                            <div class="glass-panel rounded-2xl p-5 shadow-glass relative overflow-hidden group">
+                                <div
+                                    class="absolute right-0 top-0 p-4 opacity-10 group-hover:opacity-20 transition-opacity">
+                                    <span class="material-symbols-outlined text-[48px] text-accent-blue">call</span>
+                                </div>
+                                <p class="text-slate-500 dark:text-slate-400 text-sm font-medium mb-1">Active Calls</p>
+                                <div class="flex items-baseline gap-2">
+                                    <h3 class="text-3xl font-bold text-text-dark dark:text-white tracking-tight">1,245
+                                    </h3>
+                                    <span
+                                        class="text-xs font-bold text-emerald-600 bg-emerald-100 dark:bg-emerald-900/30 px-1.5 py-0.5 rounded">+12%</span>
+                                </div>
+                            </div>
+                            <!-- Card 2 -->
+                            <div class="glass-panel rounded-2xl p-5 shadow-glass relative overflow-hidden group">
+                                <div
+                                    class="absolute right-0 top-0 p-4 opacity-10 group-hover:opacity-20 transition-opacity">
+                                    <span class="material-symbols-outlined text-[48px] text-accent-blue">schedule</span>
+                                </div>
+                                <p class="text-slate-500 dark:text-slate-400 text-sm font-medium mb-1">Avg Handling Time
+                                </p>
+                                <div class="flex items-baseline gap-2">
+                                    <h3 class="text-3xl font-bold text-text-dark dark:text-white tracking-tight">4m 12s
+                                    </h3>
+                                    <span
+                                        class="text-xs font-bold text-rose-600 bg-rose-100 dark:bg-rose-900/30 px-1.5 py-0.5 rounded">-5%</span>
+                                </div>
+                            </div>
+                            <!-- Card 3 -->
+                            <div class="glass-panel rounded-2xl p-5 shadow-glass relative overflow-hidden group">
+                                <div
+                                    class="absolute right-0 top-0 p-4 opacity-10 group-hover:opacity-20 transition-opacity">
+                                    <span
+                                        class="material-symbols-outlined text-[48px] text-accent-blue">smart_toy</span>
+                                </div>
+                                <p class="text-slate-500 dark:text-slate-400 text-sm font-medium mb-1">Automation Rate
+                                </p>
+                                <div class="flex items-baseline gap-2">
+                                    <h3 class="text-3xl font-bold text-text-dark dark:text-white tracking-tight">85%
+                                    </h3>
+                                    <span
+                                        class="text-xs font-bold text-emerald-600 bg-emerald-100 dark:bg-emerald-900/30 px-1.5 py-0.5 rounded">+2.4%</span>
+                                </div>
+                            </div>
+                            <!-- Card 4 -->
+                            <div class="glass-panel rounded-2xl p-5 shadow-glass relative overflow-hidden group">
+                                <div
+                                    class="absolute right-0 top-0 p-4 opacity-10 group-hover:opacity-20 transition-opacity">
+                                    <span
+                                        class="material-symbols-outlined text-[48px] text-accent-blue">rate_review</span>
+                                </div>
+                                <p class="text-slate-500 dark:text-slate-400 text-sm font-medium mb-1">Pending Reviews
+                                </p>
+                                <div class="flex items-baseline gap-2">
+                                    <h3 class="text-3xl font-bold text-text-dark dark:text-white tracking-tight">12</h3>
+                                    <span
+                                        class="text-xs font-bold text-amber-600 bg-amber-100 dark:bg-amber-900/30 px-1.5 py-0.5 rounded">+3%</span>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- Live Pipeline Visualizer -->
+                        <div class="flex-1 glass-panel rounded-2xl p-6 shadow-glass flex flex-col">
+                            <div class="flex justify-between items-center mb-6">
+                                <h3 class="text-xl font-bold text-text-dark dark:text-white flex items-center gap-2">
+                                    <span class="material-symbols-outlined text-accent-blue">linear_scale</span>
+                                    Live Pipeline Visualizer
+                                </h3>
+                                <div class="flex gap-2">
+                                    <button
+                                        class="p-1.5 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-500 dark:text-slate-400 transition-colors">
+                                        <span class="material-symbols-outlined text-[20px]">refresh</span>
+                                    </button>
+                                    <button
+                                        class="p-1.5 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-500 dark:text-slate-400 transition-colors">
+                                        <span class="material-symbols-outlined text-[20px]">fullscreen</span>
+                                    </button>
+                                </div>
+                            </div>
+                            <!-- Flow Diagram Container -->
+                            <div class="flex-1 relative flex items-center justify-between px-4 py-8 min-h-[300px]">
+                                <!-- Connecting Line Background -->
+                                <div
+                                    class="absolute top-1/2 left-0 w-full h-[2px] bg-slate-200 dark:bg-slate-700 -z-10 transform -translate-y-1/2">
+                                </div>
+                                <!-- Animated Pulse Line -->
+                                <div
+                                    class="absolute top-1/2 left-0 w-full h-[2px] bg-gradient-to-r from-transparent via-accent-blue to-transparent -z-10 transform -translate-y-1/2 opacity-50 animate-pulse">
+                                </div>
+                                <!-- Node 1: Gatekeeper -->
+                                <div class="relative flex flex-col items-center group cursor-pointer z-10">
+                                    <div
+                                        class="w-16 h-16 rounded-2xl bg-white dark:bg-slate-800 border-2 border-slate-200 dark:border-slate-600 group-hover:border-accent-blue shadow-lg flex items-center justify-center transition-all duration-300 transform group-hover:scale-110">
+                                        <span
+                                            class="material-symbols-outlined text-accent-blue text-[28px]">security</span>
+                                    </div>
+                                    <div class="absolute top-20 text-center w-32">
+                                        <p class="font-bold text-sm text-text-dark dark:text-white">Gatekeeper</p>
+                                        <p class="text-xs text-slate-500 dark:text-slate-400">Filtering spam</p>
+                                    </div>
+                                    <div
+                                        class="absolute -top-3 -right-3 w-6 h-6 rounded-full bg-emerald-500 text-white text-[10px] font-bold flex items-center justify-center border-2 border-white dark:border-slate-800 shadow-sm">
+                                        OK
+                                    </div>
+                                </div>
+                                <!-- Node 2: Analyzer -->
+                                <div class="relative flex flex-col items-center group cursor-pointer z-10">
+                                    <div
+                                        class="w-16 h-16 rounded-2xl bg-white dark:bg-slate-800 border-2 border-slate-200 dark:border-slate-600 group-hover:border-accent-blue shadow-lg flex items-center justify-center transition-all duration-300 transform group-hover:scale-110">
+                                        <span
+                                            class="material-symbols-outlined text-accent-blue text-[28px]">analytics</span>
+                                    </div>
+                                    <div class="absolute top-20 text-center w-32">
+                                        <p class="font-bold text-sm text-text-dark dark:text-white">Analyzer</p>
+                                        <p class="text-xs text-slate-500 dark:text-slate-400">Processing intent</p>
+                                    </div>
+                                    <div
+                                        class="absolute -top-3 -right-3 w-6 h-6 rounded-full bg-primary text-text-dark text-[10px] font-bold flex items-center justify-center border-2 border-white dark:border-slate-800 shadow-sm">
+                                        98%
+                                    </div>
+                                </div>
+                                <!-- Node 3: Forecaster -->
+                                <div class="relative flex flex-col items-center group cursor-pointer z-10">
+                                    <div
+                                        class="w-16 h-16 rounded-2xl bg-white dark:bg-slate-800 border-2 border-slate-200 dark:border-slate-600 group-hover:border-accent-blue shadow-lg flex items-center justify-center transition-all duration-300 transform group-hover:scale-110">
+                                        <span
+                                            class="material-symbols-outlined text-accent-blue text-[28px]">query_stats</span>
+                                    </div>
+                                    <div class="absolute top-20 text-center w-32">
+                                        <p class="font-bold text-sm text-text-dark dark:text-white">Forecaster</p>
+                                        <p class="text-xs text-slate-500 dark:text-slate-400">Predicting volume</p>
+                                    </div>
+                                </div>
+                                <!-- Node 4: Scheduler -->
+                                <div class="relative flex flex-col items-center group cursor-pointer z-10">
+                                    <div
+                                        class="w-16 h-16 rounded-2xl bg-white dark:bg-slate-800 border-2 border-accent-blue shadow-lg shadow-accent-blue/20 flex items-center justify-center transition-all duration-300 transform scale-110">
+                                        <span
+                                            class="material-symbols-outlined text-accent-blue text-[28px] animate-spin">sync</span>
+                                    </div>
+                                    <div class="absolute top-20 text-center w-32">
+                                        <p class="font-bold text-sm text-text-dark dark:text-white">Scheduler</p>
+                                        <p class="text-xs text-accent-blue font-semibold">Active processing</p>
+                                    </div>
+                                </div>
+                                <!-- Node 5: Trainer -->
+                                <div class="relative flex flex-col items-center group cursor-pointer z-10">
+                                    <div
+                                        class="w-16 h-16 rounded-2xl bg-white dark:bg-slate-800 border-2 border-slate-200 dark:border-slate-600 group-hover:border-accent-blue shadow-lg flex items-center justify-center transition-all duration-300 transform group-hover:scale-110">
+                                        <span
+                                            class="material-symbols-outlined text-accent-blue text-[28px]">school</span>
+                                    </div>
+                                    <div class="absolute top-20 text-center w-32">
+                                        <p class="font-bold text-sm text-text-dark dark:text-white">Trainer</p>
+                                        <p class="text-xs text-slate-500 dark:text-slate-400">Learning mode</p>
+                                    </div>
+                                </div>
+                            </div>
+                            <!-- Bottom Data Strip -->
+                            <div
+                                class="mt-12 pt-4 border-t border-slate-200 dark:border-slate-700 flex justify-between text-xs text-slate-500 dark:text-slate-400">
+                                <span>Last Sync: 12ms ago</span>
+                                <span>Throughput: 145 req/s</span>
+                                <span>Latency: 45ms (avg)</span>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- Right Column: Audit Log -->
+                    <div class="w-full lg:w-80 flex-shrink-0 flex flex-col">
+                        <div class="glass-panel rounded-2xl p-0 shadow-glass flex flex-col h-full overflow-hidden">
+                            <div
+                                class="p-5 border-b border-slate-200 dark:border-slate-700 bg-white/50 dark:bg-slate-800/50 backdrop-blur-sm">
+                                <h3 class="text-lg font-bold text-text-dark dark:text-white flex items-center gap-2">
+                                    <span class="material-symbols-outlined text-slate-500">list_alt</span>
+                                    Live Audit Log
+                                </h3>
+                            </div>
+                            <div class="flex-1 overflow-y-auto p-2 space-y-2">
+                                <!-- Log Item 1 -->
+                                <div
+                                    class="p-3 rounded-lg hover:bg-white/60 dark:hover:bg-slate-700/60 transition-colors group cursor-default">
+                                    <div class="flex justify-between items-start mb-1">
+                                        <span class="text-[10px] font-mono text-slate-400">10:42:23 AM</span>
+                                        <span
+                                            class="px-1.5 py-0.5 rounded text-[10px] font-bold bg-green-100 text-green-700 dark:bg-green-900/40 dark:text-green-300">SUCCESS</span>
+                                    </div>
+                                    <p class="text-sm font-medium text-text-dark dark:text-slate-200 leading-snug">
+                                        Scheduler allocated resource <span class="text-accent-blue">#A-421</span></p>
+                                </div>
+                                <!-- Log Item 2 -->
+                                <div
+                                    class="p-3 rounded-lg hover:bg-white/60 dark:hover:bg-slate-700/60 transition-colors group cursor-default">
+                                    <div class="flex justify-between items-start mb-1">
+                                        <span class="text-[10px] font-mono text-slate-400">10:42:18 AM</span>
+                                        <span
+                                            class="px-1.5 py-0.5 rounded text-[10px] font-bold bg-blue-100 text-blue-700 dark:bg-blue-900/40 dark:text-blue-300">INFO</span>
+                                    </div>
+                                    <p class="text-sm font-medium text-text-dark dark:text-slate-200 leading-snug">
+                                        Forecaster model updated v2.1.4</p>
+                                </div>
+                                <!-- Log Item 3 (Warning) -->
+                                <div
+                                    class="p-3 rounded-lg bg-amber-50/50 dark:bg-amber-900/10 border border-amber-100 dark:border-amber-900/20 group cursor-default">
+                                    <div class="flex justify-between items-start mb-1">
+                                        <span class="text-[10px] font-mono text-amber-600/70">10:41:55 AM</span>
+                                        <span
+                                            class="px-1.5 py-0.5 rounded text-[10px] font-bold bg-amber-100 text-amber-700 dark:bg-amber-900/40 dark:text-amber-300">WARN</span>
+                                    </div>
+                                    <p class="text-sm font-medium text-text-dark dark:text-slate-200 leading-snug">High
+                                        latency detected in Analyzer node</p>
+                                </div>
+                                <!-- Log Item 4 -->
+                                <div
+                                    class="p-3 rounded-lg hover:bg-white/60 dark:hover:bg-slate-700/60 transition-colors group cursor-default">
+                                    <div class="flex justify-between items-start mb-1">
+                                        <span class="text-[10px] font-mono text-slate-400">10:41:12 AM</span>
+                                        <span
+                                            class="px-1.5 py-0.5 rounded text-[10px] font-bold bg-green-100 text-green-700 dark:bg-green-900/40 dark:text-green-300">SUCCESS</span>
+                                    </div>
+                                    <p class="text-sm font-medium text-text-dark dark:text-slate-200 leading-snug">Batch
+                                        #4002 completed processing</p>
+                                </div>
+                                <!-- Log Item 5 -->
+                                <div
+                                    class="p-3 rounded-lg hover:bg-white/60 dark:hover:bg-slate-700/60 transition-colors group cursor-default">
+                                    <div class="flex justify-between items-start mb-1">
+                                        <span class="text-[10px] font-mono text-slate-400">10:40:05 AM</span>
+                                        <span
+                                            class="px-1.5 py-0.5 rounded text-[10px] font-bold bg-purple-100 text-purple-700 dark:bg-purple-900/40 dark:text-purple-300">SYSTEM</span>
+                                    </div>
+                                    <p class="text-sm font-medium text-text-dark dark:text-slate-200 leading-snug">
+                                        Auto-scaling group expanded +2 nodes</p>
+                                </div>
+                                <!-- Log Item 6 -->
+                                <div
+                                    class="p-3 rounded-lg hover:bg-white/60 dark:hover:bg-slate-700/60 transition-colors group cursor-default">
+                                    <div class="flex justify-between items-start mb-1">
+                                        <span class="text-[10px] font-mono text-slate-400">10:39:42 AM</span>
+                                        <span
+                                            class="px-1.5 py-0.5 rounded text-[10px] font-bold bg-blue-100 text-blue-700 dark:bg-blue-900/40 dark:text-blue-300">INFO</span>
+                                    </div>
+                                    <p class="text-sm font-medium text-text-dark dark:text-slate-200 leading-snug">User
+                                        'Admin' updated routing rules</p>
+                                </div>
+                            </div>
+                            <div
+                                class="p-3 border-t border-slate-200 dark:border-slate-700 bg-white/30 dark:bg-slate-800/30">
+                                <button
+                                    class="w-full text-xs font-semibold text-accent-blue hover:text-blue-700 dark:hover:text-blue-400 py-2 flex items-center justify-center gap-1">
+                                    View Full Logs
+                                    <span class="material-symbols-outlined text-[14px]">arrow_forward</span>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+</body>
+
+</html>

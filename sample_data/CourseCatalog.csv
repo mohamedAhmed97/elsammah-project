@@ -1,0 +1,7 @@
+course_id,course_name,duration_hours,target_skill_gap
+CRS-100,Active Listening Workshop,4.0,empathy
+CRS-101,De-escalation Techniques,3.5,escalation_rate
+CRS-102,Product Knowledge Refresher,2.0,fcr_rate
+CRS-103,CRM Advanced Navigation,2.0,avg_handle_time_seconds
+CRS-104,Upselling Fundamentals,4.0,upselling
+CRS-105,System Navigation Speed Course,1.5,avg_handle_time_seconds

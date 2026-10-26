@@ -1,0 +1,166 @@
+# BPO Ops Superflow — Scaffold Implementation Plan
+
+Scaffold a monorepo multi-agent AI system for call center BPO optimization using CrewAI, FastAPI, FastMCP, and React. The existing repo is a challenge starter template with [example_flow.py](file:///c:/Users/hossam/Desktop/crewai-bpo-challenge/example_flow.py), `mock_data/`, and `docs/`. We will add three service directories alongside the existing files, plus Docker orchestration.
+
+## Proposed Changes
+
+### Documentation
+
+#### [NEW] [project_specs.md](file:///c:/Users/hossam/Desktop/crewai-bpo-challenge/docs/project_specs.md)
+Core specification document covering:
+- System overview & objectives (EU AI Act HITL compliance)
+- Agent responsibilities (InputGatekeeper, TranscriptAnalyzer, DemandForecaster, LeaveAnalyzer, PerfAwareScheduler, TrainerDesigner, ShiftSwapCoordinator, Router)
+- Shared state schema (Pydantic `BPOFlowState` with ~20 typed fields)
+- Flow types: `training`, `schedule`, `hybrid`, `leave_review`, `shift_swap`
+- HITL checkpoint contract (pause → SSE event → manager decision → resume)
+
+#### [NEW] [architecture.md](file:///c:/Users/hossam/Desktop/crewai-bpo-challenge/docs/architecture.md)
+Architecture document with Mermaid diagrams covering:
+- 4-tier system diagram (React → FastAPI → CrewAI → FastMCP)
+- Data flow sequence diagram
+- SSE event schema
+- API endpoint contract table
+- HITL state machine
+
+---
+
+### MCP Server (`mcp_server/`)
+
+#### [NEW] [server.py](file:///c:/Users/hossam/Desktop/crewai-bpo-challenge/mcp_server/server.py)
+- FastMCP server initialization (`BPO-MCP-Server`)
+- `get_zendesk_transcripts(queue_id, time_window)` tool stub returning mock transcript data
+- `get_agent_leave_data(queue_id, time_window)` tool stub returning mock leave/absence records
+- `redact_pii(text)` middleware function (regex-based placeholder for emails, phones, SSNs)
+- PII redaction applied automatically before returning data
+
+#### [NEW] [requirements.txt](file:///c:/Users/hossam/Desktop/crewai-bpo-challenge/mcp_server/requirements.txt)
+- `fastmcp>=2.0`, `pydantic>=2.0`
+
+#### [NEW] [Dockerfile](file:///c:/Users/hossam/Desktop/crewai-bpo-challenge/mcp_server/Dockerfile)
+
+---
+
+### Backend — CrewAI + FastAPI (`backend/`)
+
+#### [NEW] [models/state.py](file:///c:/Users/hossam/Desktop/crewai-bpo-challenge/backend/models/state.py)
+Pydantic models:
+- `BPOFlowState` — main shared state (~20 fields incl. `leave_report`, `swap_request`, `swap_result`)
+- `TeamPerfMetrics`, `DemandForecast`, `ScheduleOutput`, `TrainingPlan` — core pipeline models
+- `LeaveReport`, `AgentLeave`, `LeaveOverlap`, `CoverageGap` — leave analysis models
+- `SwapRequest`, `ShiftSwapResult`, `ScheduleIntersection` — shift swap models
+- `HITLDecision`, `AuditLogEntry` — HITL-related types
+- `FlowType` — Literal enum (`"training" | "schedule" | "hybrid" | "leave_review" | "shift_swap"`)
+- `APIError` — typed error model (no generic catch-all)
+
+#### [NEW] [models/__init__.py](file:///c:/Users/hossam/Desktop/crewai-bpo-challenge/backend/models/__init__.py)
+
+#### [NEW] [agents/transcript_analyzer.py](file:///c:/Users/hossam/Desktop/crewai-bpo-challenge/backend/agents/transcript_analyzer.py)
+- Stub CrewAI Agent + Task definition
+- Uses MCP tool to read transcripts; computes `team_perf` metrics placeholder
+
+#### [NEW] [agents/demand_forecaster.py](file:///c:/Users/hossam/Desktop/crewai-bpo-challenge/backend/agents/demand_forecaster.py)
+- Stub for generating `demand_forecast` from historical volume
+
+#### [NEW] [agents/perf_aware_scheduler.py](file:///c:/Users/hossam/Desktop/crewai-bpo-challenge/backend/agents/perf_aware_scheduler.py)
+- Stub combining perf + forecast → `schedule_output`
+
+#### [NEW] [agents/trainer_designer.py](file:///c:/Users/hossam/Desktop/crewai-bpo-challenge/backend/agents/trainer_designer.py)
+- Stub using perf data → `training_plan`
+
+#### [NEW] [agents/leave_analyzer.py](file:///c:/Users/hossam/Desktop/crewai-bpo-challenge/backend/agents/leave_analyzer.py)
+- Stub for leave balance inspection, overlap detection, and schedule intersection computation
+
+#### [NEW] [agents/shift_swap_coordinator.py](file:///c:/Users/hossam/Desktop/crewai-bpo-challenge/backend/agents/shift_swap_coordinator.py)
+- Stub for swap feasibility validation and coverage impact analysis
+
+#### [NEW] [agents/__init__.py](file:///c:/Users/hossam/Desktop/crewai-bpo-challenge/backend/agents/__init__.py)
+
+#### [NEW] [flow/bpo_flow.py](file:///c:/Users/hossam/Desktop/crewai-bpo-challenge/backend/flow/bpo_flow.py)
+CrewAI Flow class (`BPOSuperflow`) with:
+- `@start()` → `input_gatekeeper` (validates and initializes state)
+- `@listen(input_gatekeeper)` → `analyze_transcripts` (invokes TranscriptAnalyzer)
+- `@listen(analyze_transcripts)` → `forecast_demand` (invokes DemandForecaster)
+- `@listen(forecast_demand)` → `analyze_leave` (invokes LeaveAnalyzer)
+- `@router(analyze_leave)` → `route_by_flow_type` (returns `"training"`, `"schedule"`, `"hybrid"`, `"leave_review"`, or `"shift_swap"`)
+- `@listen("schedule")` / `@listen("hybrid")` → `generate_schedule` (invokes PerfAwareScheduler)
+- `@listen("training")` / `@listen("hybrid")` → `design_training` (invokes TrainerDesigner)
+- `@listen("shift_swap")` → `coordinate_swap` (invokes ShiftSwapCoordinator)
+- `@listen("leave_review")` → skips to HITL with leave report only
+- `@listen(generate_schedule, design_training, coordinate_swap)` → `hitl_checkpoint`
+- `@listen(hitl_checkpoint)` → [finalize](file:///c:/Users/hossam/Desktop/crewai-bpo-challenge/example_flow.py#255-268) — resumes after HITL decision, writes audit log
+
+#### [NEW] [flow/__init__.py](file:///c:/Users/hossam/Desktop/crewai-bpo-challenge/backend/flow/__init__.py)
+
+#### [NEW] [main.py](file:///c:/Users/hossam/Desktop/crewai-bpo-challenge/backend/main.py)
+FastAPI application:
+- `POST /api/flow/start` — accepts `FlowStartRequest` (flow_type, queue_id, time_window, optional swap_request), spins up flow in background, returns `run_id`
+- `GET /api/flow/{run_id}/stream` — SSE endpoint streaming `audit_log` and state changes
+- `GET /api/flow/{run_id}/state` — returns current `BPOFlowState`
+- `POST /api/flow/{run_id}/hitl` — accepts `HITLDecision` (approve/edit/reject + optional edits), resumes flow
+- CORS middleware configured for frontend dev server
+- Typed error responses (not generic catch-all)
+
+#### [NEW] [requirements.txt](file:///c:/Users/hossam/Desktop/crewai-bpo-challenge/backend/requirements.txt)
+- `crewai[tools]>=0.100.0`, `pydantic>=2.0`, `python-dotenv`, `litellm`, `fastapi`, `uvicorn[standard]`, `sse-starlette`
+
+#### [NEW] [Dockerfile](file:///c:/Users/hossam/Desktop/crewai-bpo-challenge/backend/Dockerfile)
+
+---
+
+### React Frontend (`frontend/`)
+
+#### [NEW] Vite + React + TypeScript + Tailwind CSS project
+Scaffolded with `npm create vite@latest` (React + TypeScript template), then Tailwind CSS v4 added.
+
+#### [NEW] [src/types.ts](file:///c:/Users/hossam/Desktop/crewai-bpo-challenge/frontend/src/types.ts)
+TypeScript interfaces mirroring backend Pydantic models:
+- `BPOFlowState`, `FlowStartRequest`, `HITLDecision`, `AuditLogEntry`, `TeamPerfMetrics`, etc.
+
+#### [NEW] [src/App.tsx](file:///c:/Users/hossam/Desktop/crewai-bpo-challenge/frontend/src/App.tsx)
+Main layout with three panel sections:
+- **RunForm** — Form to initiate a flow run (flow_type selector, queue_id, time_window)
+- **LiveConsole** — Scrolling SSE-powered audit log / timeline
+- **HITLModal** — Modal overlay for Approve / Edit / Reject actions
+
+#### [NEW] [src/components/RunForm.tsx](file:///c:/Users/hossam/Desktop/crewai-bpo-challenge/frontend/src/components/RunForm.tsx)
+#### [NEW] [src/components/LiveConsole.tsx](file:///c:/Users/hossam/Desktop/crewai-bpo-challenge/frontend/src/components/LiveConsole.tsx)
+#### [NEW] [src/components/HITLModal.tsx](file:///c:/Users/hossam/Desktop/crewai-bpo-challenge/frontend/src/components/HITLModal.tsx)
+
+#### [NEW] [Dockerfile](file:///c:/Users/hossam/Desktop/crewai-bpo-challenge/frontend/Dockerfile)
+
+---
+
+### Docker Orchestration
+
+#### [NEW] [docker-compose.yml](file:///c:/Users/hossam/Desktop/crewai-bpo-challenge/docker-compose.yml)
+Three services:
+- `mcp_server` — exposes port 8001
+- `backend` — exposes port 8000, depends on `mcp_server`
+- `frontend` — exposes port 5173, depends on `backend`
+Shared [.env](file:///c:/Users/hossam/Desktop/crewai-bpo-challenge/.env) file mounting
+
+#### [MODIFY] [.gitignore](file:///c:/Users/hossam/Desktop/crewai-bpo-challenge/.gitignore)
+Add `node_modules/`, `frontend/dist/`, and Docker-related ignores
+
+#### [MODIFY] [.env.example](file:///c:/Users/hossam/Desktop/crewai-bpo-challenge/.env.example)
+Add `MCP_SERVER_URL`, `BACKEND_URL` variables
+
+---
+
+## Verification Plan
+
+### Automated Checks
+
+1. **Python syntax validation** — Run `python -c "import backend.main; import backend.flow.bpo_flow; import backend.models.state"` from the project root to verify all backend modules import without errors.
+
+2. **MCP server syntax** — Run `python -c "import mcp_server.server"` to verify the MCP server module imports.
+
+3. **Frontend build** — Run `cd frontend && npm install && npm run build` to verify the React app compiles without TypeScript or build errors.
+
+4. **Docker Compose validation** — Run `docker compose config` to verify the compose file is syntactically valid.
+
+### Manual Verification
+
+- Visually inspect the generated directory tree to confirm it matches the architecture spec.
+- Confirm all Pydantic models have strict typing (no `Any` or untyped fields).
+- Confirm no generic `except Exception` blocks — only typed error states.

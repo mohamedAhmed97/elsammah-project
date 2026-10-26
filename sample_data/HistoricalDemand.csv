@@ -1,0 +1,10 @@
+date,queue_id,time_slot,call_volume,avg_handle_time,service_level
+2025-06-01,billing_support,morning,145,240,85.5
+2025-06-01,billing_support,afternoon,210,250,78.2
+2025-06-01,billing_support,evening,80,220,95.0
+2025-06-02,billing_support,morning,160,245,84.1
+2025-06-02,billing_support,afternoon,230,260,75.4
+2025-06-02,billing_support,evening,95,225,92.5
+2025-06-03,billing_support,morning,155,235,86.0
+2025-06-03,billing_support,afternoon,205,245,81.5
+2025-06-03,billing_support,evening,85,215,94.2

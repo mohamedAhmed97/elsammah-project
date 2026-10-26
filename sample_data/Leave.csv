@@ -1,0 +1,6 @@
+agent_id,agent_name,leave_type,start_date,end_date,remaining_balance_days,status
+AGT-201,Sofia Martinez,annual,2025-06-16,2025-06-20,12.0,approved
+AGT-202,Diego Ramirez,sick,2025-06-18,2025-06-19,8.0,approved
+AGT-203,Isabella Torres,annual,2025-06-23,2025-06-27,15.0,approved
+AGT-204,Miguel Santos,sick,2025-06-17,2025-06-20,5.0,pending
+AGT-205,Valentina Cruz,annual,2025-07-01,2025-07-11,18.0,approved

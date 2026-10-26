@@ -1,0 +1,57 @@
+[
+  {
+    "id": "TKT-1001",
+    "customer_name": "Maria Garcia",
+    "channel": "chat",
+    "timestamp": "2025-06-12T09:14:00Z",
+    "subject": "Billing discrepancy on June invoice",
+    "message": "Hi, I was charged $149.99 on my June invoice but my plan is supposed to be $99.99/month. I haven't made any changes to my subscription. Can you please look into this and issue a refund for the difference?",
+    "priority": "high",
+    "category": "billing",
+    "language": "en"
+  },
+  {
+    "id": "TKT-1002",
+    "customer_name": "Carlos Mendoza",
+    "channel": "email",
+    "timestamp": "2025-06-12T10:32:00Z",
+    "subject": "Cannot access my account after password reset",
+    "message": "I reset my password yesterday but now I keep getting 'invalid credentials' when I try to log in. I've tried resetting again but the email never arrives. My account email is carlos.m@email.com. This is urgent as I need to download my tax documents before the deadline.",
+    "priority": "high",
+    "category": "account_access",
+    "language": "en"
+  },
+  {
+    "id": "TKT-1003",
+    "customer_name": "Ana Silva",
+    "channel": "phone",
+    "timestamp": "2025-06-12T11:05:00Z",
+    "subject": "Question about upgrading plan",
+    "message": "Customer called asking about the differences between the Professional and Enterprise plans. Specifically interested in API rate limits, number of user seats, and whether data migration is included in the upgrade. Currently on Professional plan for 8 months.",
+    "priority": "medium",
+    "category": "sales_inquiry",
+    "language": "en"
+  },
+  {
+    "id": "TKT-1004",
+    "customer_name": "Jean-Pierre Dubois",
+    "channel": "chat",
+    "timestamp": "2025-06-12T14:22:00Z",
+    "subject": "Application crashes when exporting reports",
+    "message": "Every time I try to export a report to PDF from the dashboard, the application freezes and then crashes. This started happening after the update last week. I'm using Chrome 125 on Windows 11. I've cleared cache and tried incognito mode but the issue persists. This is blocking my weekly reporting to management.",
+    "priority": "high",
+    "category": "technical_issue",
+    "language": "en"
+  },
+  {
+    "id": "TKT-1005",
+    "customer_name": "Lucia Fernandez",
+    "channel": "email",
+    "timestamp": "2025-06-12T16:45:00Z",
+    "subject": "Feedback on new mobile app",
+    "message": "Just wanted to share some positive feedback — the new mobile app update is fantastic! The navigation is much smoother and the dark mode looks great. One small suggestion: it would be nice to have a widget for the home screen showing my usage stats. Keep up the good work!",
+    "priority": "low",
+    "category": "feedback",
+    "language": "en"
+  }
+]

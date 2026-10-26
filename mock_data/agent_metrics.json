@@ -1,0 +1,82 @@
+[
+  {
+    "agent_id": "AGT-201",
+    "agent_name": "Sofia Martinez",
+    "team": "Customer Support",
+    "week": "2025-W24",
+    "metrics": {
+      "tickets_handled": 127,
+      "avg_handle_time_seconds": 342,
+      "avg_first_response_seconds": 45,
+      "csat_score": 4.6,
+      "fcr_rate": 0.82,
+      "escalation_rate": 0.08,
+      "schedule_adherence": 0.95,
+      "channels": {"chat": 78, "email": 34, "phone": 15}
+    }
+  },
+  {
+    "agent_id": "AGT-202",
+    "agent_name": "Diego Ramirez",
+    "team": "Customer Support",
+    "week": "2025-W24",
+    "metrics": {
+      "tickets_handled": 98,
+      "avg_handle_time_seconds": 510,
+      "avg_first_response_seconds": 120,
+      "csat_score": 4.2,
+      "fcr_rate": 0.71,
+      "escalation_rate": 0.15,
+      "schedule_adherence": 0.88,
+      "channels": {"chat": 45, "email": 38, "phone": 15}
+    }
+  },
+  {
+    "agent_id": "AGT-203",
+    "agent_name": "Isabella Torres",
+    "team": "Technical Support",
+    "week": "2025-W24",
+    "metrics": {
+      "tickets_handled": 85,
+      "avg_handle_time_seconds": 620,
+      "avg_first_response_seconds": 90,
+      "csat_score": 4.8,
+      "fcr_rate": 0.76,
+      "escalation_rate": 0.12,
+      "schedule_adherence": 0.97,
+      "channels": {"chat": 30, "email": 40, "phone": 15}
+    }
+  },
+  {
+    "agent_id": "AGT-204",
+    "agent_name": "Miguel Santos",
+    "team": "Sales Support",
+    "week": "2025-W24",
+    "metrics": {
+      "tickets_handled": 64,
+      "avg_handle_time_seconds": 780,
+      "avg_first_response_seconds": 200,
+      "csat_score": 3.9,
+      "fcr_rate": 0.62,
+      "escalation_rate": 0.22,
+      "schedule_adherence": 0.82,
+      "channels": {"chat": 20, "email": 30, "phone": 14}
+    }
+  },
+  {
+    "agent_id": "AGT-205",
+    "agent_name": "Valentina Cruz",
+    "team": "Customer Support",
+    "week": "2025-W24",
+    "metrics": {
+      "tickets_handled": 142,
+      "avg_handle_time_seconds": 298,
+      "avg_first_response_seconds": 30,
+      "csat_score": 4.7,
+      "fcr_rate": 0.88,
+      "escalation_rate": 0.05,
+      "schedule_adherence": 0.98,
+      "channels": {"chat": 92, "email": 35, "phone": 15}
+    }
+  }
+]

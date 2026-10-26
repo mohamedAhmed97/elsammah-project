@@ -1,0 +1,309 @@
+# BPO Superflow Pipeline — Latency Analysis
+
+## Pipeline Architecture Overview
+
+```mermaid
+flowchart LR
+    A["input_gatekeeper"] --> B["analyze_transcripts"]
+    B --> C["forecast_demand"]
+    C --> D["analyze_leave"]
+    D --> E{"route_by_flow_type"}
+    E -->|schedule| F["generate_schedule"]
+    E -->|training| G["design_training"]
+    E -->|hybrid| H["schedule + training"]
+    E -->|shift_swap| I["coordinate_swap"]
+    E -->|leave_review| J["leave_review"]
+    F & G & H & I & J --> K["hitl_checkpoint"]
+    K --> L["finalize"]
+
+    style A fill:#4a9eff
+    style B fill:#ff6b6b
+    style C fill:#ff6b6b
+    style D fill:#ff6b6b
+    style F fill:#ff6b6b
+    style G fill:#ff6b6b
+    style H fill:#ff6b6b
+    style I fill:#ff6b6b
+    style K fill:#ffa500
+    style L fill:#4a9eff
+```
+> 🔴 = LLM call (high latency) · 🟠 = HITL wait · 🔵 = local logic
+
+---
+
+## Identified Latency Sources
+
+### 1. 🔴 Sequential LLM Calls (Dominant Bottleneck)
+
+Every agent step creates a **new `Crew` object and calls `kickoff()`**, which triggers a full LLM round-trip. These run **strictly sequentially** due to the `@listen` chain in [bpo_flow.py](file:///c:/Github%20Projects/crew-ai-hackathon-sama3a/backend/flow/bpo_flow.py).
+
+| Step | Agent | LLM Call? | Depends on previous? |
+|------|-------|-----------|----------------------|
+| [analyze_transcripts](file:///c:/Github%20Projects/crew-ai-hackathon-sama3a/backend/flow/bpo_flow.py#130-150) | TranscriptAnalyzer | ✅ | Only [input_gatekeeper](file:///c:/Github%20Projects/crew-ai-hackathon-sama3a/backend/flow/bpo_flow.py#69-128) |
+| [forecast_demand](file:///c:/Github%20Projects/crew-ai-hackathon-sama3a/backend/flow/bpo_flow.py#152-172) | DemandForecaster | ✅ | Needs `team_perf` from step above |
+| [analyze_leave](file:///c:/Github%20Projects/crew-ai-hackathon-sama3a/backend/flow/bpo_flow.py#174-208) | LeaveAnalyzer | ✅ | **Does NOT need** forecast output |
+| [generate_schedule](file:///c:/Github%20Projects/crew-ai-hackathon-sama3a/backend/flow/bpo_flow.py#226-232) | PerfAwareScheduler | ✅ | Needs forecast + leave + perf |
+| [design_training](file:///c:/Github%20Projects/crew-ai-hackathon-sama3a/backend/flow/bpo_flow.py#234-240) | TrainerDesigner | ✅ | Needs only `team_perf` |
+| [coordinate_swap](file:///c:/Github%20Projects/crew-ai-hackathon-sama3a/backend/flow/bpo_flow.py#254-270) | ShiftSwapCoordinator | ✅ | Needs only `leave_report` |
+
+**Impact**: Each LLM call adds ~5–30s depending on model, prompt size, and API latency. For a [hybrid](file:///c:/Github%20Projects/crew-ai-hackathon-sama3a/backend/flow/bpo_flow.py#242-252) flow (worst case), the pipeline makes **5 sequential LLM calls**, totaling **25–150s** of LLM wait time alone.
+
+> [!IMPORTANT]
+> [analyze_leave](file:///c:/Github%20Projects/crew-ai-hackathon-sama3a/backend/flow/bpo_flow.py#174-208) does NOT depend on [forecast_demand](file:///c:/Github%20Projects/crew-ai-hackathon-sama3a/backend/flow/bpo_flow.py#152-172) output — it only needs `queue_id` and `time_window`. Yet it waits for the forecast to complete due to the serial `@listen` chain.
+
+---
+
+### 2. 🟡 Serial MCP/Google Sheets Round-Trips
+
+Each agent makes **1–2 separate MCP calls** to fetch data. These are HTTP round-trips to `mcp_server:8001`, which in turn makes Google Sheets API calls.
+
+| Agent | MCP Calls | Data Fetched |
+|-------|-----------|--------------|
+| `transcript_analyzer` | 2 | [get_transcripts](file:///c:/Github%20Projects/crew-ai-hackathon-sama3a/mcp_server/server.py#264-321) + [get_agent_performance_data](file:///c:/Github%20Projects/crew-ai-hackathon-sama3a/mcp_server/server.py#376-428) |
+| `demand_forecaster` | 1 | [get_historical_demand](file:///c:/Github%20Projects/crew-ai-hackathon-sama3a/mcp_server/server.py#430-485) |
+| `leave_analyzer` | 1 | [get_agent_leave_data](file:///c:/Github%20Projects/crew-ai-hackathon-sama3a/mcp_server/server.py#323-374) |
+| `perf_aware_scheduler` | 1 | [get_agent_availability](file:///c:/Github%20Projects/crew-ai-hackathon-sama3a/mcp_server/server.py#528-568) |
+| `trainer_designer` | 1 | [get_course_catalog](file:///c:/Github%20Projects/crew-ai-hackathon-sama3a/mcp_server/server.py#487-526) |
+| `shift_swap_coordinator` | 1 | [get_weekly_schedules](file:///c:/Github%20Projects/crew-ai-hackathon-sama3a/mcp_server/server.py#570-609) |
+
+These calls happen **serially within each agent** and **serially across agents** — so 7 sequential HTTP+Google Sheets round-trips in a typical [schedule](file:///c:/Github%20Projects/crew-ai-hackathon-sama3a/backend/flow/bpo_flow.py#226-232) flow.
+
+**Impact**: Each Google Sheets API call takes ~200–800ms. Total: ~1.5–5.6s of serial I/O.
+
+---
+
+### 3. 🟡 Per-Call MCP Client Instantiation
+
+In [mcp_client.py](file:///c:/Github%20Projects/crew-ai-hackathon-sama3a/backend/utils/mcp_client.py#L70-L87), every [call_tool_sync()](file:///c:/Github%20Projects/crew-ai-hackathon-sama3a/backend/utils/mcp_client.py#115-117) invocation:
+
+1. Creates a **new [Client(MCP_SERVER_URL)](file:///c:/Github%20Projects/crew-ai-hackathon-sama3a/backend/utils/mcp_client.py#112-120)** instance
+2. Opens a **new HTTP connection** (`async with client:`)
+3. Closes the connection after the call
+
+```python
+async def _call_tool_async(tool_name, arguments):
+    client = Client(MCP_SERVER_URL)       # NEW client every call
+    async with client:                     # NEW connection every call
+        result = await client.call_tool(tool_name, arguments)
+        return _parse_call_tool_result(result)
+```
+
+This adds **TCP/TLS handshake overhead** for every single MCP call.
+
+---
+
+### 4. 🟡 Synchronous MCP Calls from Async Context
+
+The [call_tool_sync()](file:///c:/Github%20Projects/crew-ai-hackathon-sama3a/backend/utils/mcp_client.py#115-117) wrapper uses `concurrent.futures.ThreadPoolExecutor` + `asyncio.run()` to bridge sync→async:
+
+```python
+future = _thread_pool.submit(asyncio.run, _call_tool_async(tool_name, arguments))
+return future.result(timeout=60)
+```
+
+Each call creates a **new event loop** inside a thread, adding ~5–15ms overhead per call.
+
+---
+
+### 5. 🟠 Hardcoded Sleep Delays in API Layer
+
+In [main.py](file:///c:/Github%20Projects/crew-ai-hackathon-sama3a/backend/main.py#L186-L201):
+
+```python
+# Line 188: 3-second delay after HITL decision
+time.sleep(3.0)  # Give finalize step time to complete
+
+# Line 201: 1-second delay in _save_flow_to_db
+time.sleep(1.0)
+```
+
+These are **unconditional waits** that add 1–4s of dead time to every flow completion.
+
+---
+
+### 6. 🟡 Hybrid Flow Runs Two LLM Agents Sequentially
+
+In [bpo_flow.py L242-L251](file:///c:/Github%20Projects/crew-ai-hackathon-sama3a/backend/flow/bpo_flow.py#L242-L251), [handle_hybrid()](file:///c:/Github%20Projects/crew-ai-hackathon-sama3a/backend/flow/bpo_flow.py#242-252) runs schedule generation and training design **back-to-back**:
+
+```python
+def handle_hybrid(self):
+    run_schedule_generation(self.state)   # LLM call #1
+    run_training_design(self.state)       # LLM call #2 (waits for #1)
+```
+
+These two have **no data dependency** between each other — they both only need `team_perf`, [demand_forecast](file:///c:/Github%20Projects/crew-ai-hackathon-sama3a/backend/agents/demand_forecaster.py#47-164), and `leave_report` which are already computed by this point.
+
+---
+
+## Latency Breakdown — Worst Case ([hybrid](file:///c:/Github%20Projects/crew-ai-hackathon-sama3a/backend/flow/bpo_flow.py#242-252) flow)
+
+| Phase | Time Estimate | Notes |
+|-------|---------------|-------|
+| [input_gatekeeper](file:///c:/Github%20Projects/crew-ai-hackathon-sama3a/backend/flow/bpo_flow.py#69-128) | ~5ms | Local validation |
+| MCP: [get_transcripts](file:///c:/Github%20Projects/crew-ai-hackathon-sama3a/mcp_server/server.py#264-321) | ~500ms | Google Sheets |
+| MCP: [get_agent_performance_data](file:///c:/Github%20Projects/crew-ai-hackathon-sama3a/mcp_server/server.py#376-428) | ~500ms | Google Sheets |
+| LLM: [analyze_transcripts](file:///c:/Github%20Projects/crew-ai-hackathon-sama3a/backend/flow/bpo_flow.py#130-150) | ~10–30s | Gemini 2.5 Flash |
+| MCP: [get_historical_demand](file:///c:/Github%20Projects/crew-ai-hackathon-sama3a/mcp_server/server.py#430-485) | ~500ms | Google Sheets |
+| LLM: [forecast_demand](file:///c:/Github%20Projects/crew-ai-hackathon-sama3a/backend/flow/bpo_flow.py#152-172) | ~10–30s | Gemini 2.5 Flash |
+| MCP: [get_agent_leave_data](file:///c:/Github%20Projects/crew-ai-hackathon-sama3a/mcp_server/server.py#323-374) | ~500ms | Google Sheets |
+| LLM: [analyze_leave](file:///c:/Github%20Projects/crew-ai-hackathon-sama3a/backend/flow/bpo_flow.py#174-208) | ~10–30s | Gemini 2.5 Flash |
+| Router | ~1ms | Local switch |
+| MCP: [get_agent_availability](file:///c:/Github%20Projects/crew-ai-hackathon-sama3a/mcp_server/server.py#528-568) | ~500ms | Google Sheets |
+| LLM: [generate_schedule](file:///c:/Github%20Projects/crew-ai-hackathon-sama3a/backend/flow/bpo_flow.py#226-232) | ~10–30s | Gemini 2.5 Flash |
+| MCP: [get_course_catalog](file:///c:/Github%20Projects/crew-ai-hackathon-sama3a/mcp_server/server.py#487-526) | ~500ms | Google Sheets |
+| LLM: [design_training](file:///c:/Github%20Projects/crew-ai-hackathon-sama3a/backend/flow/bpo_flow.py#234-240) | ~10–30s | Gemini 2.5 Flash |
+| HITL wait | variable | Human decision |
+| [finalize](file:///c:/Github%20Projects/crew-ai-hackathon-sama3a/backend/flow/bpo_flow.py#333-452) + email | ~1–3s | Gmail API + sleeps |
+| **Total (excl. HITL)** | **~55–180s** | |
+
+---
+
+## Recommendations to Reduce Latency
+
+### High Impact
+
+#### 1. Parallelize Independent Steps
+
+> [!TIP]
+> The biggest win: run [forecast_demand](file:///c:/Github%20Projects/crew-ai-hackathon-sama3a/backend/flow/bpo_flow.py#152-172) and [analyze_leave](file:///c:/Github%20Projects/crew-ai-hackathon-sama3a/backend/flow/bpo_flow.py#174-208) **concurrently** since neither depends on the other's output.
+
+```mermaid
+flowchart LR
+    A["analyze_transcripts"] --> B["forecast_demand"]
+    A --> C["analyze_leave"]
+    B & C --> D{"router"}
+```
+
+**Estimated savings**: ~10–30s (one full LLM call eliminated from the critical path).
+
+For [hybrid](file:///c:/Github%20Projects/crew-ai-hackathon-sama3a/backend/flow/bpo_flow.py#242-252) flows, also parallelize [generate_schedule](file:///c:/Github%20Projects/crew-ai-hackathon-sama3a/backend/flow/bpo_flow.py#226-232) and [design_training](file:///c:/Github%20Projects/crew-ai-hackathon-sama3a/backend/flow/bpo_flow.py#234-240):
+
+```python
+import concurrent.futures
+
+def handle_hybrid(self):
+    with concurrent.futures.ThreadPoolExecutor(max_workers=2) as executor:
+        f1 = executor.submit(run_schedule_generation, self.state)
+        f2 = executor.submit(run_training_design, self.state)
+        f1.result()
+        f2.result()
+```
+
+**Estimated savings**: Another ~10–30s.
+
+#### 2. Batch MCP Data Fetches Upfront
+
+Instead of fetching data inside each agent, pre-fetch **all needed data** in a single batch step right after [input_gatekeeper](file:///c:/Github%20Projects/crew-ai-hackathon-sama3a/backend/flow/bpo_flow.py#69-128):
+
+```python
+@listen(input_gatekeeper)
+def prefetch_data(self):
+    """Fetch all MCP data concurrently."""
+    with concurrent.futures.ThreadPoolExecutor(max_workers=4) as pool:
+        futures = {
+            "transcripts": pool.submit(mcp_client.call_tool_sync, "get_transcripts", {...}),
+            "performance": pool.submit(mcp_client.call_tool_sync, "get_agent_performance_data", {...}),
+            "leave": pool.submit(mcp_client.call_tool_sync, "get_agent_leave_data", {...}),
+            "demand": pool.submit(mcp_client.call_tool_sync, "get_historical_demand", {...}),
+        }
+        self.state._prefetched = {k: f.result() for k, f in futures.items()}
+```
+
+**Estimated savings**: ~2–4s (from serialized to parallel I/O).
+
+#### 3. Use Connection Pooling for MCP Client
+
+Reuse the HTTP client connection across calls:
+
+```python
+_client_instance = None
+
+async def _call_tool_async(tool_name, arguments):
+    global _client_instance
+    if _client_instance is None:
+        _client_instance = Client(MCP_SERVER_URL)
+    # Reuse the same client session
+    async with _client_instance:
+        result = await _client_instance.call_tool(tool_name, arguments)
+        return _parse_call_tool_result(result)
+```
+
+**Estimated savings**: ~50–200ms per call (TCP handshake eliminated).
+
+---
+
+### Medium Impact
+
+#### 4. Remove Hardcoded Sleeps
+
+Replace `time.sleep(3.0)` and `time.sleep(1.0)` in [main.py](file:///c:/Github%20Projects/crew-ai-hackathon-sama3a/backend/main.py) with event-driven completion signals:
+
+```python
+# Instead of sleeping, use threading.Event or asyncio.Event
+flow._finalize_event = threading.Event()
+flow._finalize_event.wait(timeout=10)  # Wait for actual completion
+```
+
+**Estimated savings**: ~1–4s.
+
+#### 5. Cache Google Sheets Data in MCP Server
+
+Add a TTL cache (e.g., 5 min) in [server.py](file:///c:/Github%20Projects/crew-ai-hackathon-sama3a/mcp_server/server.py) for [_read_sheet_tab()](file:///c:/Github%20Projects/crew-ai-hackathon-sama3a/mcp_server/server.py#111-139):
+
+```python
+from functools import lru_cache
+from cachetools import TTLCache
+
+_sheet_cache = TTLCache(maxsize=20, ttl=300)
+
+def _read_sheet_tab(tab_name: str) -> list[dict]:
+    if tab_name in _sheet_cache:
+        return _sheet_cache[tab_name]
+    # ... existing fetch logic ...
+    _sheet_cache[tab_name] = records
+    return records
+```
+
+**Estimated savings**: ~200–800ms per repeated tab access within a 5-min window.
+
+#### 6. Use Faster / Smaller Model for Simple Tasks
+
+Some agents like `leave_analyzer` do mostly **deterministic analysis** (overlap detection, coverage ratios) that's already computed in Python code after the LLM call. The LLM call in `leave_analyzer` is largely redundant — the structured leave report is built from code, not LLM output.
+
+Consider removing the LLM call from `leave_analyzer` entirely and replacing it with pure Python logic (which already exists on lines 142–222 of the file).
+
+**Estimated savings**: ~10–30s (one entire LLM call removed).
+
+---
+
+### Low Impact / Quick Wins
+
+#### 7. Skip Redundant LLM Calls
+
+The `transcript_analyzer` already pre-computes team averages from MCP data before sending to the LLM. The LLM call is used for qualitative analysis (strengths/gaps). If qualitative insights aren't critical, this step could be replaced with the pre-computed metrics.
+
+#### 8. Use Model with Lower Latency
+
+The current model is `gemini/gemini-2.5-flash`. Consider evaluating `gemini-2.0-flash` or a smaller model for non-critical agents to reduce per-call latency.
+
+#### 9. Reduce Prompt Sizes
+
+Some prompts include full transcript text concatenated inline. For large transcript volumes, this increases token count and response time. Consider summarizing or truncating transcript content before sending to the LLM.
+
+---
+
+## Summary — Potential Savings
+
+| Optimization | Estimated Savings | Effort |
+|-------------|-------------------|--------|
+| Parallelize [forecast](file:///c:/Github%20Projects/crew-ai-hackathon-sama3a/backend/flow/bpo_flow.py#152-172)+[leave](file:///c:/Github%20Projects/crew-ai-hackathon-sama3a/backend/flow/bpo_flow.py#174-208) | **10–30s** | Medium |
+| Parallelize [schedule](file:///c:/Github%20Projects/crew-ai-hackathon-sama3a/backend/flow/bpo_flow.py#226-232)+[training](file:///c:/Github%20Projects/crew-ai-hackathon-sama3a/backend/flow/bpo_flow.py#234-240) (hybrid) | **10–30s** | Low |
+| Remove LLM from `leave_analyzer` | **10–30s** | Medium |
+| Batch MCP data prefetch | **2–4s** | Medium |
+| Remove hardcoded sleeps | **1–4s** | Low |
+| MCP connection pooling | **0.3–1.5s** | Low |
+| Google Sheets caching | **0.5–2s** | Low |
+| **Total potential** | **~34–101s** | |
+
+> [!IMPORTANT]
+> The top-3 optimizations (parallelization + removing the redundant `leave_analyzer` LLM call) could cut end-to-end latency by **~30–90 seconds**, bringing a [hybrid](file:///c:/Github%20Projects/crew-ai-hackathon-sama3a/backend/flow/bpo_flow.py#242-252) flow from ~55–180s down to ~25–90s.

@@ -1,0 +1,57 @@
+[
+  {
+    "id": "CMP-301",
+    "campaign_name": "Summer Upgrade Push",
+    "target_segment": "professional_plan_users",
+    "channel": "email",
+    "language": "en",
+    "message": "Unlock enterprise-grade features this summer! Upgrade to our Enterprise plan before July 31st and get 3 months free. Includes unlimited API access, priority support, and advanced analytics.",
+    "cta": "Upgrade Now",
+    "scheduled_date": "2025-06-15",
+    "status": "pending_review"
+  },
+  {
+    "id": "CMP-302",
+    "campaign_name": "Churn Prevention - Inactive Users",
+    "target_segment": "inactive_30_days",
+    "channel": "email",
+    "language": "en",
+    "message": "We miss you! It's been a while since you logged in. We've added some exciting new features including AI-powered insights and a redesigned dashboard. Come back and see what's new — your data is right where you left it.",
+    "cta": "Explore What's New",
+    "scheduled_date": "2025-06-16",
+    "status": "pending_review"
+  },
+  {
+    "id": "CMP-303",
+    "campaign_name": "NPS Follow-up - Detractors",
+    "target_segment": "nps_detractors",
+    "channel": "sms",
+    "language": "es",
+    "message": "Valoramos su opinión. Hemos recibido sus comentarios y nos gustaría conocer más sobre su experiencia. ¿Podemos agendar una llamada de 10 minutos para entender cómo mejorar nuestro servicio?",
+    "cta": "Agendar Llamada",
+    "scheduled_date": "2025-06-17",
+    "status": "pending_review"
+  },
+  {
+    "id": "CMP-304",
+    "campaign_name": "New Feature Announcement",
+    "target_segment": "all_active_users",
+    "channel": "in_app",
+    "language": "en",
+    "message": "Introducing Smart Reports! Generate beautiful, AI-powered reports in one click. Available now for all plan levels. Try it out from your dashboard under Reports > Smart Reports.",
+    "cta": "Try Smart Reports",
+    "scheduled_date": "2025-06-18",
+    "status": "approved"
+  },
+  {
+    "id": "CMP-305",
+    "campaign_name": "Renewal Reminder - Annual Plans",
+    "target_segment": "annual_renewal_30_days",
+    "channel": "email",
+    "language": "pt",
+    "message": "Seu plano anual será renovado em 30 dias. Renove agora e garanta o preço atual — nossos planos terão um reajuste de 10% a partir de agosto. Como cliente fiel, você também ganha acesso antecipado às nossas novas funcionalidades.",
+    "cta": "Renovar Agora",
+    "scheduled_date": "2025-06-19",
+    "status": "pending_review"
+  }
+]

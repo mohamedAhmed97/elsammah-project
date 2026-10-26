@@ -1,0 +1,5 @@
+transcript_id,queue_id,agent_id,content,duration_seconds,timestamp,channel,sentiment
+TRX-001,Q-SUPPORT-01,AGT-201,"Customer: Hi, my name is John Smith, email john.smith@example.com. I need help with my account. My phone is 555-123-4567. Agent: Hello John, I'd be happy to help. Let me look up your account.",342,2025-06-09T10:30:00Z,phone,neutral
+TRX-002,Q-SUPPORT-01,AGT-202,"Customer: This is Maria Garcia, SSN 123-45-6789. I've been waiting for 20 minutes! This is unacceptable. Agent: I sincerely apologize for the wait, Maria. Let me escalate this.",510,2025-06-09T11:15:00Z,phone,negative
+TRX-003,Q-SUPPORT-01,AGT-203,"Customer: Thank you so much for the quick resolution! You can reach me at customer@testmail.com if needed. Agent: You're welcome! Is there anything else I can help with?",180,2025-06-09T14:00:00Z,chat,positive
+TRX-004,Q-SUPPORT-01,AGT-205,"Customer: I need to update my credit card to 4111-1111-1111-1111. Agent: For security, I cannot process card updates over chat. Please use our secure portal.",120,2025-06-09T15:30:00Z,chat,neutral
