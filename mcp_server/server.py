@@ -7,8 +7,12 @@ PII-redaction middleware, and Gmail-based email notifications.
 """
 
 import base64
+import csv
+import io
 import os
 import re
+import urllib.parse
+import urllib.request
 from datetime import date, datetime
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
@@ -30,14 +34,10 @@ mcp = FastMCP(
 
 
 # ---------------------------------------------------------------------------
-# Google API Authentication
+# Google API Authentication (Gmail only — Sheets uses public CSV URL)
 # ---------------------------------------------------------------------------
-SCOPES = [
-    "https://www.googleapis.com/auth/spreadsheets.readonly",
-    "https://www.googleapis.com/auth/gmail.send",
-]
+_GMAIL_SCOPES = ["https://www.googleapis.com/auth/gmail.send"]
 
-# Resolve credential paths relative to this file's directory
 _SERVER_DIR = os.path.dirname(os.path.abspath(__file__))
 _PROJECT_ROOT = os.path.dirname(_SERVER_DIR)
 
@@ -54,19 +54,14 @@ MANAGER_EMAIL = os.getenv("MANAGER_EMAIL", "")
 
 
 def _get_google_creds():
-    """Authenticate with Google via OAuth2 Desktop flow.
-
-    On first run, opens a browser for consent.
-    On subsequent runs, reuses the saved token.json.
-    """
+    """Authenticate with Google via OAuth2 Desktop flow (used for Gmail only)."""
     from google.auth.transport.requests import Request
     from google.oauth2.credentials import Credentials
     from google_auth_oauthlib.flow import InstalledAppFlow
 
     creds = None
-
     if os.path.exists(TOKEN_PATH):
-        creds = Credentials.from_authorized_user_file(TOKEN_PATH, SCOPES)
+        creds = Credentials.from_authorized_user_file(TOKEN_PATH, _GMAIL_SCOPES)
 
     if not creds or not creds.valid:
         if creds and creds.expired and creds.refresh_token:
@@ -75,26 +70,14 @@ def _get_google_creds():
             if not os.path.exists(CREDENTIALS_PATH):
                 raise FileNotFoundError(
                     f"credentials.json not found at {CREDENTIALS_PATH}. "
-                    "Download it from the GCP Console."
+                    "Download it from the GCP Console (needed for Gmail only)."
                 )
-            flow = InstalledAppFlow.from_client_secrets_file(
-                CREDENTIALS_PATH, SCOPES
-            )
+            flow = InstalledAppFlow.from_client_secrets_file(CREDENTIALS_PATH, _GMAIL_SCOPES)
             creds = flow.run_local_server(port=0)
-
-        # Save the token for future runs
         with open(TOKEN_PATH, "w") as token_file:
             token_file.write(creds.to_json())
 
     return creds
-
-
-def _get_sheets_service():
-    """Return an authenticated Google Sheets API service."""
-    from googleapiclient.discovery import build
-
-    creds = _get_google_creds()
-    return build("sheets", "v4", credentials=creds)
 
 
 def _get_gmail_service():
@@ -106,36 +89,27 @@ def _get_gmail_service():
 
 
 # ---------------------------------------------------------------------------
-# Google Sheets Helpers
+# Google Sheets Helpers (public sheet — no credentials required)
 # ---------------------------------------------------------------------------
 def _read_sheet_tab(tab_name: str) -> list[dict]:
-    """Read all rows from a Google Sheet tab and return as a list of dicts.
+    """Read all rows from a public Google Sheet tab via CSV export URL.
 
-    The first row is treated as headers.
-    Falls back to an empty list if Sheets is unavailable.
+    The sheet must be shared as "Anyone with the link can view".
+    The first row is treated as column headers.
     """
     if not GOOGLE_SHEETS_ID:
         raise ConnectionError("GOOGLE_SHEETS_ID not configured.")
 
-    service = _get_sheets_service()
-    result = (
-        service.spreadsheets()
-        .values()
-        .get(spreadsheetId=GOOGLE_SHEETS_ID, range=f"{tab_name}!A:Z")
-        .execute()
+    url = (
+        f"https://docs.google.com/spreadsheets/d/{GOOGLE_SHEETS_ID}"
+        f"/gviz/tq?tqx=out:csv&sheet={urllib.parse.quote(tab_name)}"
     )
-    rows = result.get("values", [])
-    if len(rows) < 2:
-        return []
+    req = urllib.request.Request(url, headers={"User-Agent": "BPO-MCP-Server/1.0"})
+    with urllib.request.urlopen(req, timeout=30) as response:
+        content = response.read().decode("utf-8")
 
-    headers = rows[0]
-    records = []
-    for row in rows[1:]:
-        # Pad short rows with empty strings
-        padded = row + [""] * (len(headers) - len(row))
-        records.append(dict(zip(headers, padded)))
-
-    return records
+    reader = csv.DictReader(io.StringIO(content))
+    return [dict(row) for row in reader]
 
 
 # ---------------------------------------------------------------------------
